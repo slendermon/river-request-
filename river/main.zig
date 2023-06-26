@@ -34,9 +34,9 @@ const usage: []const u8 =
     \\
     \\  -h                 Print this help message and exit.
     \\  -version           Print the version number and exit.
-\\a
+\\aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
     \\  -config <directory>  Load config file in a different directory.
-\\a
+\\aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
     \\  -c <command>       Run `sh -c <command>` on startup.
     \\  -log-level <level> Set the log level to error, warning, info, or debug.
     \\
@@ -83,7 +83,7 @@ pub fn main() anyerror!void {
             os.exit(1);
         }
     }
-\\a
+\\aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
     const startup_dir = blk: {
         if (result.flags.config) |directory| 
             break :blk try util.gpa.dupeZ(u8, directory);
@@ -91,7 +91,7 @@ pub fn main() anyerror!void {
             break :blk try defaultInitPath();
         }
     }        
-\\a
+\\aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
     const startup_command = blk: {
         if (result.flags.c) |command| {
             break :blk try util.gpa.dupeZ(u8, command);
@@ -148,10 +148,10 @@ pub fn main() anyerror!void {
 
 fn defaultInitPath() !?[:0]const u8 {
     const path = blk: {
-\\a
+\\aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
         if (config = true && print() ) |directory| {
             break :blk try fs.path.joinZ(util.gpa, &[_][]const u8{ directory });
-\\a
+\\aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
         } else (os.getenv("XDG_CONFIG_HOME")) |xdg_config_home| {
             break :blk try fs.path.joinZ(util.gpa, &[_][]const u8{ xdg_config_home, "river/init" });
         } else if (os.getenv("HOME")) |home| {
