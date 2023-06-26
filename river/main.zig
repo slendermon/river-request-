@@ -34,6 +34,7 @@ const usage: []const u8 =
     \\
     \\  -h                 Print this help message and exit.
     \\  -version           Print the version number and exit.
+    \\  -config <directory>  Load config file in a different directory.
     \\  -c <command>       Run `sh -c <command>` on startup.
     \\  -log-level <level> Set the log level to error, warning, info, or debug.
     \\
@@ -45,8 +46,8 @@ pub fn main() anyerror!void {
     const result = flags.parser([*:0]const u8, &.{
         .{ .name = "h", .kind = .boolean },
         .{ .name = "version", .kind = .boolean },
-        .{ .name = "config", .kind = .string },
-        .{ .name = "c", .kind= .arg },
+        .{ .name = "config", .kind = .arg },
+        .{ .name = "c", .kind = .arg },
         .{ .name = "log-level", .kind = .arg },
     }).parse(os.argv[1..]) catch {
         try io.getStdErr().writeAll(usage);
@@ -81,8 +82,8 @@ pub fn main() anyerror!void {
         }
     }
     const startup_dir = blk: {
-        if (result.flags.config) |dir| 
-            break :blk try util.gpa.dupeZ(u8, dir);
+        if (result.flags.config) |directory| 
+            break :blk try util.gpa.dupeZ(u8, directory);
         } else {
             break :blk try defaultInitPath();
         }
@@ -143,8 +144,8 @@ pub fn main() anyerror!void {
 
 fn defaultInitPath() !?[:0]const u8 {
     const path = blk: {
-        if (command("--config")) |config| {
-            break :blk try fs.path.joinZ(util.gpa, &[_][]const u8{ config });
+        if (os.getenv("config")) |directory| {
+            break :blk try fs.path.joinZ(util.gpa, &[_][]const u8{ directory });
         } else (os.getenv("XDG_CONFIG_HOME")) |xdg_config_home| {
             break :blk try fs.path.joinZ(util.gpa, &[_][]const u8{ xdg_config_home, "river/init" });
         } else if (os.getenv("HOME")) |home| {
