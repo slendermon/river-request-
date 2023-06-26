@@ -45,7 +45,8 @@ pub fn main() anyerror!void {
     const result = flags.parser([*:0]const u8, &.{
         .{ .name = "h", .kind = .boolean },
         .{ .name = "version", .kind = .boolean },
-        .{ .name = "c", .kind = .arg },
+        .{ .name = "config", .kind = .string },
+        .{ .name = "c", .kind= .arg },
         .{ .name = "log-level", .kind = .arg },
     }).parse(os.argv[1..]) catch {
         try io.getStdErr().writeAll(usage);
@@ -60,7 +61,6 @@ pub fn main() anyerror!void {
         try io.getStdErr().writeAll(usage);
         os.exit(1);
     }
-
     if (result.flags.version) {
         try io.getStdOut().writeAll(build_options.version ++ "\n");
         os.exit(0);
@@ -80,6 +80,13 @@ pub fn main() anyerror!void {
             os.exit(1);
         }
     }
+    const startup_dir = blk: {
+        if (result.flags.config) |dir| 
+            break :blk try util.gpa.dupeZ(u8, dir);
+        } else {
+            break :blk try defaultInitPath();
+        }
+    }        
     const startup_command = blk: {
         if (result.flags.c) |command| {
             break :blk try util.gpa.dupeZ(u8, command);
@@ -136,7 +143,9 @@ pub fn main() anyerror!void {
 
 fn defaultInitPath() !?[:0]const u8 {
     const path = blk: {
-        if (os.getenv("XDG_CONFIG_HOME")) |xdg_config_home| {
+        if (command("--config")) |config| {
+            break :blk try fs.path.joinZ(util.gpa, &[_][]const u8{ config });
+        } else (os.getenv("XDG_CONFIG_HOME")) |xdg_config_home| {
             break :blk try fs.path.joinZ(util.gpa, &[_][]const u8{ xdg_config_home, "river/init" });
         } else if (os.getenv("HOME")) |home| {
             break :blk try fs.path.joinZ(util.gpa, &[_][]const u8{ home, ".config/river/init" });
